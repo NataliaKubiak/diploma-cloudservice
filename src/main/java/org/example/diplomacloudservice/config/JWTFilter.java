@@ -7,7 +7,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
-import org.example.diplomacloudservice.exceptions.ErrorResponse;
+import lombok.extern.log4j.Log4j2;
+import org.example.diplomacloudservice.exceptions.JsonResponse;
 import org.example.diplomacloudservice.servises.CustomUserDetailsService;
 import org.example.diplomacloudservice.servises.JWTServise;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Log4j2
 @Component
 @AllArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
@@ -26,21 +28,17 @@ public class JWTFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService customUserDetailsService;
     private final ObjectMapper objectMapper;
 
-//    public JWTFilter(JWTServise jwtServise, CustomUserDetailsService customUserDetailsService, ObjectMapper objectMapper) {
-//        this.jwtServise = jwtServise;
-//        this.customUserDetailsService = customUserDetailsService;
-//        this.objectMapper = objectMapper;
-//    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        log.debug("JWTFilter triggered for request: {}", request.getRequestURI());
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);
 
             if (jwt.isBlank()) {
+                log.warn("Missing JWT Token in request");
                 // TODO: 11/02/2025 может тут выбросить исключение с сообщением "Missing JWT Token" и собрать обработку всех исключений с установкой статусов в одно место (чтобы sendErrorResponse например был один на всю прилу)?
                 sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Missing JWT Token", 401);
                 return;
@@ -50,17 +48,25 @@ public class JWTFilter extends OncePerRequestFilter {
                 String username = jwtServise.validateTokenAndRetrieveClaim(jwt);
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
+                log.info("Authenticated user: {}", username);
                 UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                userDetails.getPassword(),
+                                userDetails.getAuthorities());
 
                 if (SecurityContextHolder.getContext().getAuthentication() == null) {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    log.debug("Security context updated for user: {}", username);
                 }
             } catch (JWTVerificationException e) {
+                log.warn("Invalid JWT Token: {}", e.getMessage());
                 // TODO: 11/02/2025 может тут выбросить исключение с сообщением "Invalid JWT Token"?
                 sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT Token", 401);
                 return;
             }
+        } else {
+            log.debug("No Authorization header found");
         }
 
         filterChain.doFilter(request, response);
@@ -70,6 +76,6 @@ public class JWTFilter extends OncePerRequestFilter {
         response.setContentType("application/json");
         response.setStatus(status);
 
-        response.getWriter().write(objectMapper.writeValueAsString(new ErrorResponse(message, id)));
+        response.getWriter().write(objectMapper.writeValueAsString(new JsonResponse(message, id)));
     }
 }

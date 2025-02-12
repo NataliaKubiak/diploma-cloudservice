@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ErrorResponse {
+public class JsonResponse {
 
     @JsonProperty("message")
     private String message;

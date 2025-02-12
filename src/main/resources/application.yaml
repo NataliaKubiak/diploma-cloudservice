@@ -12,3 +12,8 @@ spring:
         show_sql: true
 
 jwt_secret: netology
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
