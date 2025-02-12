@@ -39,7 +39,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             if (jwt.isBlank()) {
                 log.warn("Missing JWT Token in request");
-                // TODO: 11/02/2025 может тут выбросить исключение с сообщением "Missing JWT Token" и собрать обработку всех исключений с установкой статусов в одно место (чтобы sendErrorResponse например был один на всю прилу)?
+
                 sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Missing JWT Token", 401);
                 return;
             }
@@ -61,8 +61,9 @@ public class JWTFilter extends OncePerRequestFilter {
                 }
             } catch (JWTVerificationException e) {
                 log.warn("Invalid JWT Token: {}", e.getMessage());
-                // TODO: 11/02/2025 может тут выбросить исключение с сообщением "Invalid JWT Token"?
-                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT Token", 401);
+                SecurityContextHolder.clearContext();
+
+                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT Token: " + e.getMessage(), 401);
                 return;
             }
         } else {
