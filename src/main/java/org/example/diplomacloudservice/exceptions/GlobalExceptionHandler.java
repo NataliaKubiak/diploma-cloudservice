@@ -13,7 +13,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<JsonResponse> handleBadCredentialsException(BadCredentialsException ex) {
-        return buildResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(), 401);
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), 400);
     }
 
     @ExceptionHandler(Exception.class)
