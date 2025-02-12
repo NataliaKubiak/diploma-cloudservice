@@ -12,13 +12,14 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
+@AllArgsConstructor
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper;
 
-    public JwtAuthenticationEntryPoint(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
+//    public JwtAuthenticationEntryPoint(ObjectMapper objectMapper) {
+//        this.objectMapper = objectMapper;
+//    }
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,

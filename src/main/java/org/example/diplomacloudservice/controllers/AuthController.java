@@ -17,15 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
+@AllArgsConstructor
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JWTServise jwtServise;
 
-    public AuthController(AuthenticationManager authenticationManager, JWTServise jwtServise) {
-        this.authenticationManager = authenticationManager;
-        this.jwtServise = jwtServise;
-    }
+//    public AuthController(AuthenticationManager authenticationManager, JWTServise jwtServise) {
+//        this.authenticationManager = authenticationManager;
+//        this.jwtServise = jwtServise;
+//    }
 
     @PostMapping("/login")
     public Map<String, String> performLogin(@RequestBody AuthDto authDto) {

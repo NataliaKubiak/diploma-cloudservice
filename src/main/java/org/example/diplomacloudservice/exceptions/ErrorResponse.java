@@ -7,6 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class ErrorResponse {
 
     @JsonProperty("message")
@@ -15,8 +16,8 @@ public class ErrorResponse {
     @JsonProperty("id")
     private int id;
 
-    public ErrorResponse(String message, int id) {
-        this.message = message;
-        this.id = id;
-    }
+//    public ErrorResponse(String message, int id) {
+//        this.message = message;
+//        this.id = id;
+//    }
 }

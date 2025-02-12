@@ -19,17 +19,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
+@AllArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTServise jwtServise;
     private final CustomUserDetailsService customUserDetailsService;
     private final ObjectMapper objectMapper;
 
-    public JWTFilter(JWTServise jwtServise, CustomUserDetailsService customUserDetailsService, ObjectMapper objectMapper) {
-        this.jwtServise = jwtServise;
-        this.customUserDetailsService = customUserDetailsService;
-        this.objectMapper = objectMapper;
-    }
+//    public JWTFilter(JWTServise jwtServise, CustomUserDetailsService customUserDetailsService, ObjectMapper objectMapper) {
+//        this.jwtServise = jwtServise;
+//        this.customUserDetailsService = customUserDetailsService;
+//        this.objectMapper = objectMapper;
+//    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
