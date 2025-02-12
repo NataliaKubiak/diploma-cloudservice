@@ -32,7 +32,7 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         log.debug("JWTFilter triggered for request: {}", request.getRequestURI());
-        String authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader("auth-token");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);
