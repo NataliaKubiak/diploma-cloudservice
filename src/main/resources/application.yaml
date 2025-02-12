@@ -12,6 +12,9 @@ spring:
         show_sql: true
 
 jwt_secret: netology
+file:
+  storage:
+    location: ./storage
 
 logging:
   level:

@@ -1,6 +1,5 @@
 package org.example.diplomacloudservice.exceptions;
 
-import lombok.AllArgsConstructor;
 import org.example.diplomacloudservice.dto.JsonResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,11 +8,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-@AllArgsConstructor
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<JsonResponse> handleBadCredentialsException(BadCredentialsException ex) {
+    @ExceptionHandler({
+            BadCredentialsException.class,
+            InvalidFileException.class
+    })
+    public ResponseEntity<JsonResponse> handleBadCredentialsException(RuntimeException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), 400);
     }
 
