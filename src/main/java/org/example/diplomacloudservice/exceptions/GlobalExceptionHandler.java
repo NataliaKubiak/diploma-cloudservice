@@ -1,6 +1,7 @@
 package org.example.diplomacloudservice.exceptions;
 
 import lombok.AllArgsConstructor;
+import org.example.diplomacloudservice.dto.JsonResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;

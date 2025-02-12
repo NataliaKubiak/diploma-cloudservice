@@ -1,4 +1,4 @@
-package org.example.diplomacloudservice.exceptions;
+package org.example.diplomacloudservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

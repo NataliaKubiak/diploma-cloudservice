@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.example.diplomacloudservice.exceptions.JsonResponse;
+import org.example.diplomacloudservice.dto.JsonResponse;
 import org.example.diplomacloudservice.services.CustomUserDetailsService;
 import org.example.diplomacloudservice.services.JWTService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

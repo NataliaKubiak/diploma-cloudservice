@@ -2,7 +2,7 @@ package org.example.diplomacloudservice.controllers;
 
 import lombok.AllArgsConstructor;
 import org.example.diplomacloudservice.dto.AuthDto;
-import org.example.diplomacloudservice.exceptions.JsonResponse;
+import org.example.diplomacloudservice.dto.JsonResponse;
 import org.example.diplomacloudservice.services.JWTService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
