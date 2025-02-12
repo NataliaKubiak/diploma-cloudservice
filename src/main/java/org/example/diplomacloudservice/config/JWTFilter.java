@@ -9,8 +9,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.example.diplomacloudservice.exceptions.JsonResponse;
-import org.example.diplomacloudservice.servises.CustomUserDetailsService;
-import org.example.diplomacloudservice.servises.JWTServise;
+import org.example.diplomacloudservice.services.CustomUserDetailsService;
+import org.example.diplomacloudservice.services.JWTService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,7 +24,7 @@ import java.io.IOException;
 @AllArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 
-    private final JWTServise jwtServise;
+    private final JWTService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
     private final ObjectMapper objectMapper;
 
@@ -45,7 +45,7 @@ public class JWTFilter extends OncePerRequestFilter {
             }
 
             try {
-                String username = jwtServise.validateTokenAndRetrieveClaim(jwt);
+                String username = jwtService.validateTokenAndRetrieveClaim(jwt);
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
                 log.info("Authenticated user: {}", username);

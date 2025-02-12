@@ -1,4 +1,4 @@
-package org.example.diplomacloudservice.servises;
+package org.example.diplomacloudservice.services;
 
 import lombok.AllArgsConstructor;
 import org.example.diplomacloudservice.entities.User;

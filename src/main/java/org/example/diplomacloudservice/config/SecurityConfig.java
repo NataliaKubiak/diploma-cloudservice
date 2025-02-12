@@ -1,7 +1,7 @@
 package org.example.diplomacloudservice.config;
 
 import lombok.AllArgsConstructor;
-import org.example.diplomacloudservice.servises.CustomUserDetailsService;
+import org.example.diplomacloudservice.services.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

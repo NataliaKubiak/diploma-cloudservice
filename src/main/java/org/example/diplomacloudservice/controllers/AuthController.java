@@ -3,7 +3,7 @@ package org.example.diplomacloudservice.controllers;
 import lombok.AllArgsConstructor;
 import org.example.diplomacloudservice.dto.AuthDto;
 import org.example.diplomacloudservice.exceptions.JsonResponse;
-import org.example.diplomacloudservice.servises.JWTServise;
+import org.example.diplomacloudservice.services.JWTService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +19,7 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final JWTServise jwtServise;
+    private final JWTService jwtService;
 
     @PostMapping("/login")
     public Map<String, String> performLogin(@RequestBody AuthDto authDto) {
@@ -32,7 +32,7 @@ public class AuthController {
 
         authenticationManager.authenticate(authToken);
 
-        String token = jwtServise.generateToken(authDto.getLogin());
+        String token = jwtService.generateToken(authDto.getLogin());
         return Map.of("auth-token", token);
     }
 
