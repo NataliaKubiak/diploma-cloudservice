@@ -1,6 +1,7 @@
 package org.example.diplomacloudservice.controllers;
 
 import lombok.AllArgsConstructor;
+import org.example.diplomacloudservice.utils.FileValidator;
 import org.example.diplomacloudservice.dto.JsonResponse;
 import org.example.diplomacloudservice.services.FileService;
 import org.springframework.http.ResponseEntity;
@@ -20,16 +21,15 @@ public class FileController {
     private final FileService fileService;
 
     @PostMapping("/file")
-    public ResponseEntity<JsonResponse> uploadFile(@RequestParam("filename") String filename, // Здесь filename = "document.pdf"
+    public ResponseEntity<JsonResponse> uploadFile(@RequestParam("filename") String filename,
                                                    @RequestPart("file") MultipartFile file) throws IOException {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        // Делаем валидацию в сервисе
-        fileService.validateFile(filename, file);
-
-        // TODO: 13/02/2025 проверить если файл уже существует - выбросить исключение
+        // Валидируем: формат файла, имя, есть ли такой файл в БД у этого юзера
+        FileValidator.validateFile(filename, file);
+        fileService.fileExistsForUser(filename, username);
 
         // Если все прошло успешно, загружаем файл
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         fileService.uploadFile(username, filename, file);
 
         return ResponseEntity.ok(new JsonResponse("File uploaded successfully", 200));
