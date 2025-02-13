@@ -66,6 +66,6 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
 //        return new BCryptPasswordEncoder();
-        return NoOpPasswordEncoder.getInstance();
+        return NoOpPasswordEncoder.getInstance(); //не кодирую пароль для простоты проверки (можно вставить юзеров напрямую через liquibase)
     }
 }

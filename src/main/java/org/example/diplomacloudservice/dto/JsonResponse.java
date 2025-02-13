@@ -15,9 +15,4 @@ public class JsonResponse {
 
     @JsonProperty("id")
     private int id;
-
-//    public ErrorResponse(String message, int id) {
-//        this.message = message;
-//        this.id = id;
-//    }
 }

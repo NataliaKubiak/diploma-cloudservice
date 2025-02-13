@@ -27,20 +27,4 @@ public class User {
 
     @Column(name = "role", nullable = false)
     private String role;
-
-//    public int getId() {
-//        return id;
-//    }
-//
-//    public String getLogin() {
-//        return login;
-//    }
-//
-//    public String getPassword() {
-//        return password;
-//    }
-//
-//    public String getRole() {
-//        return role;
-//    }
 }

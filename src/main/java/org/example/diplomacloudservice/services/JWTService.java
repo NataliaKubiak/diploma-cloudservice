@@ -22,18 +22,18 @@ public class JWTService {
 
         return JWT.create()
                 .withSubject("User details")
-                .withClaim("username", username)//инфа которая идет в теле токена (payload)
-                .withIssuedAt(new Date()) //когда создан
-                .withExpiresAt(expirationDate) //когда закончится
+                .withClaim("username", username)
+                .withIssuedAt(new Date())
+                .withExpiresAt(expirationDate)
                 .sign(Algorithm.HMAC256(secret));
     }
 
-    public String validateTokenAndRetrieveClaim(String token) throws JWTDecodeException { //эту ошибку выбрасывает verifier.verify(token) если один из указанных параметров не прошел проверку
-        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret)) //верифаер специальный для НАШЕГО токена
+    public String validateTokenAndRetrieveClaim(String token) throws JWTDecodeException {
+        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
                 .withSubject("User details")
                 .build();
 
-        DecodedJWT decodedJWT = verifier.verify(token); //проверяем токен на: правильный алгоритм шифрования, правильную подпись (третья часть токена с секретом), срок не истек, claim - наличие и правильность
-        return decodedJWT.getClaim("username").asString(); //возвращаем раскодированное имя пользователя
+        DecodedJWT decodedJWT = verifier.verify(token);
+        return decodedJWT.getClaim("username").asString();
     }
 }
