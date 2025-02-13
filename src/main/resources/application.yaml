@@ -5,6 +5,11 @@ spring:
     username: postgres
     password: postgres
 
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+
   jpa:
     properties:
       hibernate:
@@ -14,7 +19,7 @@ spring:
 jwt_secret: netology
 file:
   storage:
-    location: ./storage
+    location: ${user.dir}/storage
 
 logging:
   level:
