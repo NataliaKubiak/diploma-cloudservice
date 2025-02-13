@@ -20,7 +20,10 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), 400);
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler({
+            FileStorageException.class,
+            Exception.class
+    })
     public ResponseEntity<JsonResponse> handleGeneralException(Exception ex) {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error: " + ex.getMessage(), 500);
     }
