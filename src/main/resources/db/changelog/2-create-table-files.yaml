@@ -14,6 +14,11 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
+                  name: file_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
                   name: user_id
                   type: int
                   constraints:
@@ -21,12 +26,7 @@ databaseChangeLog:
                     foreignKeyName: fk_files_users
                     references: users(id)
               - column:
-                  name: file_name
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: file_path
+                  name: file_location
                   type: varchar(255)
                   constraints:
                     nullable: false

@@ -1,7 +1,10 @@
 package org.example.diplomacloudservice.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -18,16 +21,16 @@ public class File {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "file_name", nullable = false)
+    private String fileName;
+
     // TODO: 12/02/2025 подумать что там с on delete cascade или что там?
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "file_name", nullable = false)
-    private String fileName;
-
-    @Column(name = "file_path", nullable = false)
-    private String filePath;
+    @Column(name = "file_location", nullable = false)
+    private String fileLocation;
 
     @Column(name = "size")
     private Long size;
