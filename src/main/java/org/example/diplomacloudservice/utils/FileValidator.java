@@ -38,6 +38,11 @@ public class FileValidator {
             throw new InvalidFileException("Filename cannot be empty.");
         }
 
+        if (!hasValidExtension(filename)) {
+            log.error("Invalid extension format in filename: {}", filename);
+            throw new InvalidFileException("Invalid extension format in filename. Only 3 or 4 characters allowed");
+        }
+
         if (!FILENAME_PATTERN.matcher(filename).matches()) {
             log.error("Invalid characters in filename: {}", filename);
             throw new InvalidFileException("The filename contains invalid characters. Allowed characters are letters (a-z, A-Z), digits (0-9), periods (.), underscores (_), and hyphens (-). Example valid filenames: 'file_name', 'username123', 'file.name', 'a-b_c.d'");
@@ -48,6 +53,21 @@ public class FileValidator {
             throw new InvalidFileException("This file type is not allowed.");
         }
         log.debug("Filename validation passed: {}", filename);
+    }
+
+    private boolean hasValidExtension(String fileName) {
+        if (fileName == null || !fileName.contains(".")) {
+            return false;
+        }
+
+        String extension = getFileExtension(fileName);
+        return extension.matches("[a-zA-Z0-9]{3,4}"); // Проверяет 3-4 буквы/цифры
+    }
+
+    private String getFileExtension(String filename) {
+        int dotIndex = filename.lastIndexOf('.');
+        if (dotIndex == -1) return "";
+        return filename.substring(dotIndex + 1);
     }
 
     private boolean isBlockedFileType(String filename) {
