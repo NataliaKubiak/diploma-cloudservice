@@ -75,12 +75,7 @@ public class FileService {
     public void deleteFileForUser(String username, String filename) throws IOException {
         log.debug("Starting file delete for user: {}, filename: {}", username, filename);
         User owner = userService.getUserByUsername(username);
-
-        File file = fileRepository.findByFileNameAndUserId(filename, owner.getId())
-                .orElseThrow(() -> {
-                    log.warn("File '{}' not found in DB for user '{}'", filename, username);
-                    return new FileStorageException("File not found in DB");
-                });
+        File file = getFileFromDb(filename, owner);
 
         fileRepository.delete(file);
         log.info("File '{}' deleted from database for user '{}'", filename, username);
@@ -94,12 +89,7 @@ public class FileService {
 
     public Resource getFileForUser(String username, String filename) throws IOException {
         User owner = userService.getUserByUsername(username);
-
-        File fileEntity = fileRepository.findByFileNameAndUserId(filename, owner.getId())
-                .orElseThrow(() -> {
-                    log.warn("File '{}' not found in DB for user '{}'", filename, username);
-                    return new FileStorageException("File not found in DB");
-                });
+        File fileEntity = getFileFromDb(filename, owner);
 
         Path filePath = Paths.get(fileEntity.getFileLocation(), fileEntity.getFileName());
 
@@ -113,8 +103,33 @@ public class FileService {
         return resource;
     }
 
+    @Transactional
+    public void renameFileForUser(String username, String oldFilename, String newFilename) throws IOException {
+        User owner = userService.getUserByUsername(username);
+        File fileEntity = getFileFromDb(oldFilename, owner);
+
+        Path oldFilePath = Paths.get(fileEntity.getFileLocation(), fileEntity.getFileName());
+        Path newFilePath = Paths.get(fileEntity.getFileLocation(), newFilename);
+
+        Files.move(oldFilePath, newFilePath);
+
+        fileEntity.setFileName(newFilename);
+        fileRepository.save(fileEntity);
+
+        log.info("File '{}' renamed to '{}' for user '{}'", oldFilename, newFilename, username);
+    }
+
     public String getFileContentType(Resource resource) throws IOException {
         String contentType = Files.probeContentType(resource.getFile().toPath());
         return (contentType != null) ? contentType : "application/octet-stream";
+    }
+
+    private File getFileFromDb(String filename, User owner) {
+
+        return fileRepository.findByFileNameAndUserId(filename, owner.getId())
+                .orElseThrow(() -> {
+                    log.warn("File '{}' not found in DB for user '{}'", filename, owner.getLogin());
+                    return new FileStorageException("File not found in DB");
+                });
     }
 }
