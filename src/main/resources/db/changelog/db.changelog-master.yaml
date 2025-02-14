@@ -3,3 +3,5 @@ databaseChangeLog:
       file: classpath:db/changelog/1-create-table-users.yaml
   - include:
       file: classpath:db/changelog/2-create-table-files.yaml
+  - include:
+      file: classpath:db/changelog/3-insert-data-to-table-users.yaml
