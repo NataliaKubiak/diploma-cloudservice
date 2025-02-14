@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             IOException.class
     })
-    public ResponseEntity<JsonResponse> handleIOException(Exception ex) {
+    public ResponseEntity<JsonResponse> handleIOException() {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "File system access error", 500);
     }
 

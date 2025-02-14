@@ -26,3 +26,9 @@ logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
+
+#server:
+#  servlet:
+#    encoding:
+#      charset: UTF-8
+#      enabled: true
