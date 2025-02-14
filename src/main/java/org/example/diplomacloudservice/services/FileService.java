@@ -47,21 +47,9 @@ public class FileService {
         log.debug("Starting file upload for user: {}, filename: {}", username, filename);
         User fileOwner = userService.getUserByUsername(username);
 
-        //создаем папку пользователя
         Path userDir = Paths.get(storagePath, "user_" + fileOwner.getId());
         log.debug("User directory: {}", userDir.toString());
 
-        Files.createDirectories(userDir);
-        log.debug("User Directory created");
-
-        //сохраняем файл на диск
-        Path filePath = userDir.resolve(filename);
-        log.debug("File path: {}", filePath.toString());
-
-        multipartFile.transferTo(filePath.toFile());
-        log.debug("File created.");
-
-        //сохраняем инфу в БД
         File fileEntity = File.builder()
                 .fileName(filename)
                 .user(fileOwner)
@@ -72,6 +60,15 @@ public class FileService {
 
         fileRepository.save(fileEntity);
         log.debug("File Entity save in DB: {}", fileEntity.toString());
+
+        Files.createDirectories(userDir);
+        log.debug("User Directory created");
+
+        Path filePath = userDir.resolve(filename);
+        log.debug("File path: {}", filePath.toString());
+
+        multipartFile.transferTo(filePath.toFile());
+        log.debug("File saved to Storage");
     }
 
     @Transactional
