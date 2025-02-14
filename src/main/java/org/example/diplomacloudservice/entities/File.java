@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-// TODO: 12/02/2025 что там с equals and hasnCode и с toString?
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,7 +23,6 @@ public class File {
     @Column(name = "file_name", nullable = false)
     private String fileName;
 
-    // TODO: 12/02/2025 подумать что там с on delete cascade или что там?
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
