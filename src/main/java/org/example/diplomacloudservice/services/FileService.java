@@ -6,6 +6,8 @@ import org.example.diplomacloudservice.entities.User;
 import org.example.diplomacloudservice.exceptions.FileStorageException;
 import org.example.diplomacloudservice.repositories.FileRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,8 +35,15 @@ public class FileService {
         this.userService = userService;
     }
 
+    public boolean fileExistsForUser(String filename, String username) {
+        User owner = userService.getUserByUsername(username);
+        Optional<File> maybeFile = fileRepository.findByFileNameAndUserId(filename, owner.getId());
+
+        return maybeFile.isPresent();
+    }
+
     @Transactional
-    public void uploadFile(String username, String filename, MultipartFile multipartFile) throws IOException {
+    public void uploadFileForUser(String username, String filename, MultipartFile multipartFile) throws IOException {
         log.debug("Starting file upload for user: {}, filename: {}", username, filename);
         User fileOwner = userService.getUserByUsername(username);
 
@@ -65,15 +74,8 @@ public class FileService {
         log.debug("File Entity save in DB: {}", fileEntity.toString());
     }
 
-    public boolean fileExistsForUser(String filename, String username) {
-        User owner = userService.getUserByUsername(username);
-        Optional<File> maybeFile = fileRepository.findByFileNameAndUserId(filename, owner.getId());
-
-        return maybeFile.isPresent();
-    }
-
     @Transactional
-    public void deleteFile(String username, String filename) {
+    public void deleteFileForUser(String username, String filename) throws IOException {
         log.debug("Starting file delete for user: {}, filename: {}", username, filename);
         User owner = userService.getUserByUsername(username);
 
@@ -89,13 +91,33 @@ public class FileService {
         Path filePath = Paths.get(file.getFileLocation(), file.getFileName());
         log.debug("Attempting to delete file from storage: {}", filePath.toString());
 
-        try {
-            Files.delete(filePath);
-            log.info("File '{}' successfully deleted from storage", filename);
+        Files.delete(filePath);
+        log.info("File '{}' successfully deleted from storage", filename);
+    }
 
-        } catch (IOException e) {
-            log.error("Error deleting file '{}' from storage: {}", filename, e.getMessage());
-            throw new FileStorageException("Error deleting file from storage");
+    public Resource getFileForUser(String username, String filename) throws IOException {
+        User owner = userService.getUserByUsername(username);
+
+        File fileEntity = fileRepository.findByFileNameAndUserId(filename, owner.getId())
+                .orElseThrow(() -> {
+                    log.warn("File '{}' not found in DB for user '{}'", filename, username);
+                    return new FileStorageException("File not found in DB");
+                });
+
+        Path filePath = Paths.get(fileEntity.getFileLocation(), fileEntity.getFileName());
+
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if (!resource.exists() || !resource.isReadable()) {
+            log.error("Error reading file '{}' from Storage", filename);
+            throw new FileStorageException("Error reading file in Storage");
         }
+
+        return resource;
+    }
+
+    public String getFileContentType(Resource resource) throws IOException {
+        String contentType = Files.probeContentType(resource.getFile().toPath());
+        return (contentType != null) ? contentType : "application/octet-stream";
     }
 }

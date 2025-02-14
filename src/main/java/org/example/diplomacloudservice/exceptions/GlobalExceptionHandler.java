@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import java.io.IOException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -18,6 +20,13 @@ public class GlobalExceptionHandler {
     })
     public ResponseEntity<JsonResponse> handleBadCredentialsException(RuntimeException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), 400);
+    }
+
+    @ExceptionHandler({
+            IOException.class
+    })
+    public ResponseEntity<JsonResponse> handleIOException(Exception ex) {
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "File system access error", 500);
     }
 
     @ExceptionHandler({

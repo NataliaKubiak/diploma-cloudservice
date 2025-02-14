@@ -2,17 +2,17 @@ package org.example.diplomacloudservice.controllers;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.example.diplomacloudservice.exceptions.InvalidFileException;
-import org.example.diplomacloudservice.utils.FileValidator;
 import org.example.diplomacloudservice.dto.JsonResponse;
+import org.example.diplomacloudservice.exceptions.InvalidFileException;
 import org.example.diplomacloudservice.services.FileService;
+import org.example.diplomacloudservice.utils.FileValidator;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -40,14 +40,14 @@ public class FileController {
         }
 
         // Если все прошло успешно, загружаем файл
-        fileService.uploadFile(username, filename, file);
+        fileService.uploadFileForUser(username, filename, file);
         log.info("File '{}' uploaded successfully for user '{}'", filename, username);
 
         return ResponseEntity.ok(new JsonResponse("File uploaded successfully", 200));
     }
 
     @DeleteMapping("/file")
-    public ResponseEntity<JsonResponse> deleteFile(@RequestParam("filename") String filename) {
+    public ResponseEntity<JsonResponse> deleteFile(@RequestParam("filename") String filename) throws IOException {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         log.debug("Received delete request. User: {}, Filename: {}", username, filename);
 
@@ -56,9 +56,22 @@ public class FileController {
             throw new InvalidFileException("File with name '" + filename + "' does not exist for User: " + username);
         }
 
-        fileService.deleteFile(username, filename);
+        fileService.deleteFileForUser(username, filename);
         log.info("File '{}' deleted successfully for user '{}'", filename, username);
 
         return ResponseEntity.ok(new JsonResponse("File deleted successfully", 200));
+    }
+
+    @GetMapping("/file")
+    public ResponseEntity<Resource> getFile(@RequestParam("filename") String filename) throws IOException {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Resource file = fileService.getFileForUser(username, filename);
+        String contentType = fileService.getFileContentType(file);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .body(file);
     }
 }

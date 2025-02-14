@@ -67,7 +67,8 @@ public class JWTFilter extends OncePerRequestFilter {
                 return;
             }
         } else {
-            log.debug("No Authorization header found");
+            log.warn("No Authorization header found");
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "No Authorization header found", 401);
         }
 
         filterChain.doFilter(request, response);
