@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -48,8 +49,10 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<JsonResponse> performLogout() {
-        log.info("Logout request received.");
+    public ResponseEntity<JsonResponse> performLogout(@RequestHeader("auth-token") String authToken) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        jwtService.addTokenToBlacklist(username, authToken);
         SecurityContextHolder.clearContext();
 
         return ResponseEntity.ok(new JsonResponse("Successful logout", 200));

@@ -44,6 +44,13 @@ public class JWTFilter extends OncePerRequestFilter {
                 return;
             }
 
+            if(jwtService.isTokenInBlacklist(jwt)) {
+                log.info("JWT Token is in Blacklist");
+
+                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "JWT Token is invalid", 401);
+                return;
+            }
+
             try {
                 String username = jwtService.validateTokenAndRetrieveClaim(jwt);
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
