@@ -40,14 +40,14 @@ public class JWTFilter extends OncePerRequestFilter {
             if (jwt.isBlank()) {
                 log.warn("Missing JWT Token in request");
 
-                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Missing JWT Token", 401);
+                sendErrorResponse(response, "Missing JWT Token");
                 return;
             }
 
             if(jwtService.isTokenInBlacklist(jwt)) {
                 log.info("JWT Token is in Blacklist");
 
-                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "JWT Token is invalid", 401);
+                sendErrorResponse(response, "JWT Token is invalid");
                 return;
             }
 
@@ -70,7 +70,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 log.warn("Invalid JWT Token: {}", e.getMessage());
                 SecurityContextHolder.clearContext();
 
-                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT Token: " + e.getMessage(), 401);
+                sendErrorResponse(response, "Invalid JWT Token: " + e.getMessage());
                 return;
             }
         } else {
@@ -80,10 +80,10 @@ public class JWTFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private void sendErrorResponse(HttpServletResponse response, int status, String message, int id) throws IOException {
+    private void sendErrorResponse(HttpServletResponse response, String message) throws IOException {
         response.setContentType("application/json");
-        response.setStatus(status);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        response.getWriter().write(objectMapper.writeValueAsString(new JsonResponse(message, id)));
+        response.getWriter().write(objectMapper.writeValueAsString(new JsonResponse(message, 401)));
     }
 }
