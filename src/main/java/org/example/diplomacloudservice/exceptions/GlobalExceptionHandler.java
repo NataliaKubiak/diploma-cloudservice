@@ -16,7 +16,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             BadCredentialsException.class,
             InvalidFileException.class,
-            MaxUploadSizeExceededException.class
+            MaxUploadSizeExceededException.class,
+            IllegalArgumentException.class
     })
     public ResponseEntity<JsonResponse> handleBadCredentialsException(RuntimeException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), 400);
