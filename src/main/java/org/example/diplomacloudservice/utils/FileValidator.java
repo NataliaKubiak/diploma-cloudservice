@@ -50,7 +50,7 @@ public class FileValidator {
 
         if (isBlockedFileType(filename)) {
             log.warn("Blocked file type detected for filename: {}", filename);
-            throw new InvalidFileException("This file type is not allowed.");
+            throw new InvalidFileException("This file type is not allowed or file has no extension.");
         }
         log.debug("Filename validation passed: {}", filename);
     }
