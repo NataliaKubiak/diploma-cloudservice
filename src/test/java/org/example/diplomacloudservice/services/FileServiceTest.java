@@ -1,5 +1,6 @@
 package org.example.diplomacloudservice.services;
 
+import org.example.diplomacloudservice.dto.FileInfoDto;
 import org.example.diplomacloudservice.entities.File;
 import org.example.diplomacloudservice.entities.User;
 import org.example.diplomacloudservice.exceptions.FileStorageException;
@@ -14,12 +15,15 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -151,30 +155,20 @@ class FileServiceTest {
 
     @Test
     void shouldReturnFileResourceWhenFileExistsAndIsReadable() throws IOException {
-        // Мокаем пользователя, возвращаемого сервисом
         when(userService.getUserByUsername(USERNAME)).thenReturn(mockUser);
-
-        // Мокаем файл, найденный в базе данных
         when(fileRepository.findByFileNameAndUserId(FILENAME, USER_ID)).thenReturn(Optional.of(mockFile));
 
-        // Мокаем Path для файла
-        Path filePath = Paths.get(FILE_STORAGE_PATH, FILENAME);
-
-        // Используем mockConstruction для мока конструктора UrlResource
         try (MockedConstruction<UrlResource> mockedConstruction = mockConstruction(UrlResource.class,
                 (mockResource, context) -> {
                     when(mockResource.exists()).thenReturn(true);
                     when(mockResource.isReadable()).thenReturn(true);
                 })) {
 
-            // Вызываем метод
             Resource returnedResource = fileService.getFileForUser(USERNAME, FILENAME);
 
-            // Проверяем, что ресурс был возвращен
             assertNotNull(returnedResource);
             assertEquals(mockedConstruction.constructed().get(0), returnedResource);
 
-            // Проверяем, что resource был проверен на существование и читаемость
             UrlResource createdMockResource = mockedConstruction.constructed().get(0);
             verify(createdMockResource).exists();
             verify(createdMockResource).isReadable();
@@ -183,32 +177,121 @@ class FileServiceTest {
 
     @Test
     void shouldThrowFileStorageExceptionWhenFileNotReadable() throws IOException {
-        // Мокаем пользователя
         when(userService.getUserByUsername(USERNAME)).thenReturn(mockUser);
-
-        // Мокаем файл в БД
         when(fileRepository.findByFileNameAndUserId(FILENAME, USER_ID)).thenReturn(Optional.of(mockFile));
 
-        // Мокаем Path
-        Path filePath = Paths.get(FILE_STORAGE_PATH, FILENAME);
-
-        // Используем mockConstruction для мока конструктора UrlResource
         try (MockedConstruction<UrlResource> mockedConstruction = mockConstruction(UrlResource.class,
                 (mockResource, context) -> {
                     when(mockResource.exists()).thenReturn(true);
                     when(mockResource.isReadable()).thenReturn(false);
                 })) {
 
-            // Проверяем, что метод выбросит исключение
             FileStorageException thrown = assertThrows(FileStorageException.class,
                     () -> fileService.getFileForUser(USERNAME, FILENAME));
 
             assertEquals("Error reading file in Storage", thrown.getMessage());
 
-            // Получаем мок-объект из контекста и проверяем вызовы
             UrlResource createdMockResource = mockedConstruction.constructed().get(0);
             verify(createdMockResource).exists();
             verify(createdMockResource).isReadable();
         }
+    }
+
+    @Test
+    void shouldRenameFileSuccessfully() throws IOException {
+        String newFilename = "renamedFile.txt";
+
+        when(userService.getUserByUsername(USERNAME)).thenReturn(mockUser);
+        when(fileRepository.findByFileNameAndUserId(FILENAME, USER_ID)).thenReturn(Optional.of(mockFile));
+
+        Path oldFilePath = Paths.get(FILE_STORAGE_PATH, FILENAME);
+        Path newFilePath = Paths.get(FILE_STORAGE_PATH, newFilename);
+
+        try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
+            fileService.renameFileForUser(USERNAME, FILENAME, newFilename);
+
+            mockedFiles.verify(() -> Files.move(oldFilePath, newFilePath));
+            assertEquals(newFilename, mockFile.getFileName());
+            verify(fileRepository).save(mockFile);
+        }
+    }
+
+    @Test
+    void shouldThrowExceptionWhenFileNotFound() {
+        String newFilename = "renamedFile.txt";
+
+        when(userService.getUserByUsername(USERNAME)).thenReturn(mockUser);
+        when(fileRepository.findByFileNameAndUserId(FILENAME, USER_ID)).thenReturn(Optional.empty());
+
+        assertThrows(FileStorageException.class,
+                () -> fileService.renameFileForUser(USERNAME, FILENAME, newFilename));
+        verify(fileRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldThrowIOExceptionWhenFileMoveFails() throws IOException {
+        String newFilename = "renamedFile.txt";
+
+        when(userService.getUserByUsername(USERNAME)).thenReturn(mockUser);
+        when(fileRepository.findByFileNameAndUserId(FILENAME, USER_ID)).thenReturn(Optional.of(mockFile));
+
+        Path oldFilePath = Paths.get(FILE_STORAGE_PATH, FILENAME);
+        Path newFilePath = Paths.get(FILE_STORAGE_PATH, newFilename);
+
+        try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
+            mockedFiles.when(() -> Files.move(oldFilePath, newFilePath)).thenThrow(new IOException("Move failed"));
+
+            assertThrows(IOException.class, () -> fileService.renameFileForUser(USERNAME, FILENAME, newFilename));
+            assertEquals(FILENAME, mockFile.getFileName());
+
+            verify(fileRepository, never()).save(any());
+        }
+    }
+
+    @Test
+    void shouldReturnListOfUserFiles() {
+        int limit = 2;
+        List<File> mockFiles = List.of(
+                File.builder()
+                        .fileName(FILENAME)
+                        .size(1024L)
+                        .user(mockUser)
+                        .fileLocation(FILE_STORAGE_PATH)
+                        .createdAt(LocalDateTime.now()) // Поле обязательно
+                        .build(),
+                File.builder()
+                        .fileName("anotherFile.txt")
+                        .size(2048L)
+                        .user(mockUser)
+                        .fileLocation(FILE_STORAGE_PATH)
+                        .createdAt(LocalDateTime.now()) // Поле обязательно
+                        .build()
+        );
+
+        when(userService.getUserByUsername(USERNAME)).thenReturn(mockUser);
+        when(fileRepository.findFilesByUserId(USER_ID, PageRequest.of(0, limit))).thenReturn(mockFiles);
+
+        List<FileInfoDto> fileList = fileService.getUserFilesList(USERNAME, limit);
+
+        assertEquals(2, fileList.size());
+        assertEquals(FILENAME, fileList.get(0).getFilename());
+        assertEquals(1024L, fileList.get(0).getSize());
+        assertEquals("anotherFile.txt", fileList.get(1).getFilename());
+        assertEquals(2048L, fileList.get(1).getSize());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenLimitIsNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> fileService.getUserFilesList(USERNAME, null));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenLimitIsZeroOrNegative() {
+        assertThrows(IllegalArgumentException.class,
+                () -> fileService.getUserFilesList(USERNAME, 0));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> fileService.getUserFilesList(USERNAME, -5));
     }
 }
