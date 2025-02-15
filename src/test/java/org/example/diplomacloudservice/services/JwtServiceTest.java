@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,7 +35,7 @@ class JwtServiceTest {
     @BeforeEach
     void setUp() {
         jwtService = new JwtService(tokenRepository, userService);
-        jwtService.secret = SECRET_KEY;  // Присваиваем секретный ключ
+        jwtService.secret = SECRET_KEY;
     }
 
     @Test
@@ -59,26 +58,22 @@ class JwtServiceTest {
 
     @Test
     void shouldThrowJWTDecodeExceptionWhenTokenIsInvalid() {
-        String invalidToken = "invalidToken";
-
         assertThrows(JWTDecodeException.class, () -> {
-            jwtService.validateTokenAndRetrieveClaim(invalidToken);
+            jwtService.validateTokenAndRetrieveClaim(INVALID_TOKEN);
         });
     }
 
     @Test
     void shouldReturnTrueIfTokenIsInBlacklist() {
-        String token = "Bearer blacklistedToken";
-        when(tokenRepository.findFirstByToken(token)).thenReturn(Optional.of(new Token()));
+        when(tokenRepository.findFirstByToken(VALID_TOKEN)).thenReturn(Optional.of(new Token()));
 
-        assertTrue(jwtService.isTokenInBlacklist(token));
+        assertTrue(jwtService.isTokenInBlacklist(VALID_TOKEN));
     }
 
     @Test
     void shouldReturnFalseIfTokenIsNotInBlacklist() {
-        String token = "Bearer nonBlacklistedToken";
-        when(tokenRepository.findFirstByToken(token)).thenReturn(Optional.empty());
+        when(tokenRepository.findFirstByToken(INVALID_TOKEN)).thenReturn(Optional.empty());
 
-        assertFalse(jwtService.isTokenInBlacklist(token));
+        assertFalse(jwtService.isTokenInBlacklist(INVALID_TOKEN));
     }
 }
