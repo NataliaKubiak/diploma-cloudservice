@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.example.diplomacloudservice.dto.AuthDto;
 import org.example.diplomacloudservice.dto.JsonResponse;
-import org.example.diplomacloudservice.services.JWTService;
+import org.example.diplomacloudservice.services.JwtService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,7 +22,7 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final JWTService jwtService;
+    private final JwtService jwtService;
 
     @PostMapping("/login")
     public Map<String, String> performLogin(@RequestBody AuthDto authDto) {

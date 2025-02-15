@@ -20,7 +20,7 @@ import java.util.Date;
 
 @Log4j2
 @Service
-public class JWTService {
+public class JwtService {
 
     @Value("${jwt_secret}")
     private String secret;
@@ -28,7 +28,7 @@ public class JWTService {
     private final TokenRepository tokenRepository;
     private final UserService userService;
 
-    public JWTService(TokenRepository tokenRepository, UserService userService) {
+    public JwtService(TokenRepository tokenRepository, UserService userService) {
         this.tokenRepository = tokenRepository;
         this.userService = userService;
     }
