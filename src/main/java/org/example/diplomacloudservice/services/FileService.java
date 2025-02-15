@@ -1,6 +1,7 @@
 package org.example.diplomacloudservice.services;
 
 import lombok.extern.log4j.Log4j2;
+import org.example.diplomacloudservice.dto.FileInfoDto;
 import org.example.diplomacloudservice.entities.File;
 import org.example.diplomacloudservice.entities.User;
 import org.example.diplomacloudservice.exceptions.FileStorageException;
@@ -8,6 +9,7 @@ import org.example.diplomacloudservice.repositories.FileRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Log4j2
@@ -122,6 +125,22 @@ public class FileService {
     public String getFileContentType(Resource resource) throws IOException {
         String contentType = Files.probeContentType(resource.getFile().toPath());
         return (contentType != null) ? contentType : "application/octet-stream";
+    }
+
+    public List<FileInfoDto> getUserFilesList(String username, Integer limit) {
+        if (limit == null) {
+            throw new IllegalArgumentException("Limit parameter is required and cannot be null.");
+        }
+        if (limit <= 0) {
+            throw new IllegalArgumentException("Limit must be greater than 0.");
+        }
+
+        User owner = userService.getUserByUsername(username);
+
+        return fileRepository.findFilesByUserId(owner.getId(), PageRequest.of(0, limit))
+                .stream()
+                .map(file -> new FileInfoDto(file.getFileName(), file.getSize()))
+                .toList();
     }
 
     private File getFileFromDb(String filename, User owner) {
