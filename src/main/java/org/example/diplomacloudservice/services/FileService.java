@@ -28,7 +28,7 @@ import java.util.Optional;
 public class FileService {
 
     @Value("${file.storage.location:storage}")
-    private String storagePath;
+    String storagePath;
 
     private final FileRepository fileRepository;
     private final UserService userService;
