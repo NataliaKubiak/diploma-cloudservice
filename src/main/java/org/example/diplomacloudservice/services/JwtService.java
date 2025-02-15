@@ -23,7 +23,7 @@ import java.util.Date;
 public class JwtService {
 
     @Value("${jwt_secret}")
-    private String secret;
+    String secret;
 
     private final TokenRepository tokenRepository;
     private final UserService userService;
