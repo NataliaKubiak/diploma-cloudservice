@@ -95,7 +95,7 @@ class FileServiceTest {
     @Test
     void shouldUploadFileForUser() throws IOException {
         when(userService.getUserByUsername(USERNAME)).thenReturn(mockUser);
-        when(multipartFile.getSize()).thenReturn(10L); // Эмулируем размер файла
+        when(multipartFile.getSize()).thenReturn(10L);
 
         Path userDir = Paths.get(FILE_STORAGE_PATH, "user_" + USER_ID);
         Path filePath = userDir.resolve(FILENAME);
