@@ -24,6 +24,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
+/**
+ * @Test
+ * void название-тестируемого-метода_что-проверяет-тест() {...}
+ */
 @ExtendWith(MockitoExtension.class)
 class JWTFilterTest {
 
@@ -60,7 +64,7 @@ class JWTFilterTest {
     }
 
     @Test
-    void shouldAuthenticateWhenValidTokenProvided() throws Exception {
+    void doFilterInternal_shouldAuthenticateWhenValidTokenProvided() throws Exception {
         when(request.getHeader("auth-token")).thenReturn("Bearer " + VALID_JWT);
         when(jwtService.isTokenInBlacklist(VALID_JWT)).thenReturn(false);
         when(jwtService.validateTokenAndRetrieveClaim(VALID_JWT)).thenReturn("user");
@@ -74,7 +78,7 @@ class JWTFilterTest {
     }
 
     @Test
-    void shouldRejectWhenTokenIsInBlacklist() throws Exception {
+    void doFilterInternal_shouldRejectWhenTokenIsInBlacklist() throws Exception {
         when(request.getHeader("auth-token")).thenReturn("Bearer " + VALID_JWT);
         when(jwtService.isTokenInBlacklist(VALID_JWT)).thenReturn(true);
         when(response.getWriter()).thenReturn(new PrintWriter(new StringWriter()));
@@ -88,7 +92,7 @@ class JWTFilterTest {
     }
 
     @Test
-    void shouldRejectWhenTokenIsInvalid() throws Exception {
+    void doFilterInternal_shouldRejectWhenTokenIsInvalid() throws Exception {
         when(request.getHeader("auth-token")).thenReturn("Bearer " + INVALID_JWT);
         when(jwtService.isTokenInBlacklist(INVALID_JWT)).thenReturn(false);
         when(jwtService.validateTokenAndRetrieveClaim(INVALID_JWT)).thenThrow(new JWTVerificationException("Invalid token"));
@@ -105,7 +109,7 @@ class JWTFilterTest {
     }
 
     @Test
-    void shouldPassThroughWhenNoTokenProvided() throws Exception {
+    void doFilterInternal_shouldPassThroughWhenNoTokenProvided() throws Exception {
         when(request.getHeader("auth-token")).thenReturn(null);
 
         jwtFilter.doFilterInternal(request, response, filterChain);

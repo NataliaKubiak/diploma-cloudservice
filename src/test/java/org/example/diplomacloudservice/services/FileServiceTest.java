@@ -29,6 +29,10 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * @Test
+ * void название-тестируемого-метода_что-проверяет-тест() {...}
+ */
 @ExtendWith(MockitoExtension.class)
 class FileServiceTest {
 
@@ -69,7 +73,7 @@ class FileServiceTest {
     }
 
     @Test
-    void shouldReturnTrueIfFileExistsForUser() {
+    void fileExistsForUser_shouldReturnTrueIfFileExistsForUser() {
         when(userService.getUserByUsername(USERNAME)).thenReturn(mockUser);
         when(fileRepository.findByFileNameAndUserId(FILENAME, USER_ID)).thenReturn(Optional.of(mockFile));
 
@@ -81,7 +85,7 @@ class FileServiceTest {
     }
 
     @Test
-    void shouldReturnFalseIfFileDoesNotExistForUser() {
+    void fileExistsForUser_shouldReturnFalseIfFileDoesNotExistForUser() {
         when(userService.getUserByUsername(USERNAME)).thenReturn(mockUser);
         when(fileRepository.findByFileNameAndUserId(INVALID_FILENAME, USER_ID)).thenReturn(Optional.empty());
 
@@ -93,7 +97,7 @@ class FileServiceTest {
     }
 
     @Test
-    void shouldUploadFileForUser() throws IOException {
+    void uploadFileForUser_shouldUploadFileForUser() throws IOException {
         when(userService.getUserByUsername(USERNAME)).thenReturn(mockUser);
         when(multipartFile.getSize()).thenReturn(10L);
 
@@ -113,7 +117,7 @@ class FileServiceTest {
 
 
     @Test
-    void shouldDeleteFileForUser() throws IOException {
+    void deleteFileForUser_shouldDeleteFileForUser() throws IOException {
         when(userService.getUserByUsername(USERNAME)).thenReturn(mockUser);
         when(fileRepository.findByFileNameAndUserId(FILENAME, USER_ID)).thenReturn(Optional.of(mockFile));
         doNothing().when(fileRepository).delete(mockFile);
@@ -131,7 +135,7 @@ class FileServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenFileNotFoundInDb() {
+    void deleteFileForUser_shouldThrowExceptionWhenFileNotFoundInDb() {
         when(userService.getUserByUsername(USERNAME)).thenReturn(mockUser);
         when(fileRepository.findByFileNameAndUserId(FILENAME, USER_ID)).thenReturn(Optional.empty());
 
@@ -139,7 +143,7 @@ class FileServiceTest {
     }
 
     @Test
-    void shouldThrowIOExceptionWhenFileCannotBeDeletedFromStorage() throws IOException {
+    void deleteFileForUser_shouldThrowIOExceptionWhenFileCannotBeDeletedFromStorage() throws IOException {
         when(userService.getUserByUsername(USERNAME)).thenReturn(mockUser);
         when(fileRepository.findByFileNameAndUserId(FILENAME, USER_ID)).thenReturn(Optional.of(mockFile));
         doNothing().when(fileRepository).delete(mockFile);
@@ -154,7 +158,7 @@ class FileServiceTest {
     }
 
     @Test
-    void shouldReturnFileResourceWhenFileExistsAndIsReadable() throws IOException {
+    void getFileForUser_shouldReturnFileResourceWhenFileExistsAndIsReadable() throws IOException {
         when(userService.getUserByUsername(USERNAME)).thenReturn(mockUser);
         when(fileRepository.findByFileNameAndUserId(FILENAME, USER_ID)).thenReturn(Optional.of(mockFile));
 
@@ -176,7 +180,7 @@ class FileServiceTest {
     }
 
     @Test
-    void shouldThrowFileStorageExceptionWhenFileNotReadable() throws IOException {
+    void getFileForUser_shouldThrowFileStorageExceptionWhenFileNotReadable() throws IOException {
         when(userService.getUserByUsername(USERNAME)).thenReturn(mockUser);
         when(fileRepository.findByFileNameAndUserId(FILENAME, USER_ID)).thenReturn(Optional.of(mockFile));
 
@@ -198,7 +202,7 @@ class FileServiceTest {
     }
 
     @Test
-    void shouldRenameFileSuccessfully() throws IOException {
+    void renameFileForUser_shouldRenameFileSuccessfully() throws IOException {
         String newFilename = "renamedFile.txt";
 
         when(userService.getUserByUsername(USERNAME)).thenReturn(mockUser);
@@ -217,7 +221,7 @@ class FileServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenFileNotFound() {
+    void renameFileForUser_shouldThrowExceptionWhenFileNotFound() {
         String newFilename = "renamedFile.txt";
 
         when(userService.getUserByUsername(USERNAME)).thenReturn(mockUser);
@@ -229,7 +233,7 @@ class FileServiceTest {
     }
 
     @Test
-    void shouldThrowIOExceptionWhenFileMoveFails() throws IOException {
+    void renameFileForUser_shouldThrowIOExceptionWhenFileMoveFails() throws IOException {
         String newFilename = "renamedFile.txt";
 
         when(userService.getUserByUsername(USERNAME)).thenReturn(mockUser);
@@ -249,7 +253,7 @@ class FileServiceTest {
     }
 
     @Test
-    void shouldReturnListOfUserFiles() {
+    void getUserFilesList_shouldReturnListOfUserFiles() {
         int limit = 2;
         List<File> mockFiles = List.of(
                 File.builder()
@@ -257,14 +261,14 @@ class FileServiceTest {
                         .size(1024L)
                         .user(mockUser)
                         .fileLocation(FILE_STORAGE_PATH)
-                        .createdAt(LocalDateTime.now()) // Поле обязательно
+                        .createdAt(LocalDateTime.now())
                         .build(),
                 File.builder()
                         .fileName("anotherFile.txt")
                         .size(2048L)
                         .user(mockUser)
                         .fileLocation(FILE_STORAGE_PATH)
-                        .createdAt(LocalDateTime.now()) // Поле обязательно
+                        .createdAt(LocalDateTime.now())
                         .build()
         );
 
@@ -281,13 +285,13 @@ class FileServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenLimitIsNull() {
+    void getUserFilesList_shouldThrowExceptionWhenLimitIsNull() {
         assertThrows(IllegalArgumentException.class,
                 () -> fileService.getUserFilesList(USERNAME, null));
     }
 
     @Test
-    void shouldThrowExceptionWhenLimitIsZeroOrNegative() {
+    void getUserFilesList_shouldThrowExceptionWhenLimitIsZeroOrNegative() {
         assertThrows(IllegalArgumentException.class,
                 () -> fileService.getUserFilesList(USERNAME, 0));
 

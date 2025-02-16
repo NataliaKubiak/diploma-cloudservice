@@ -15,6 +15,10 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * @Test
+ * void название-тестируемого-метода_что-проверяет-тест() {...}
+ */
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
@@ -36,7 +40,7 @@ class UserServiceTest {
     }
 
     @Test
-    void shouldReturnUserWhenUsernameExists() {
+    void getUserByUsername_shouldReturnUserWhenUsernameExists() {
         when(userRepository.findByLogin(USERNAME)).thenReturn(Optional.of(mockUser));
 
         User user = userService.getUserByUsername(USERNAME);
@@ -48,7 +52,7 @@ class UserServiceTest {
     }
 
     @Test
-    void shouldThrowUsernameNotFoundExceptionWhenUsernameDoesNotExist() {
+    void getUserByUsername_shouldThrowUsernameNotFoundExceptionWhenUsernameDoesNotExist() {
         when(userRepository.findByLogin(INVALID_USERNAME)).thenReturn(Optional.empty());
 
         assertThrows(UsernameNotFoundException.class, () -> {
