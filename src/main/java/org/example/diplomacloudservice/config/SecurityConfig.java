@@ -1,6 +1,5 @@
 package org.example.diplomacloudservice.config;
 
-import lombok.AllArgsConstructor;
 import org.example.diplomacloudservice.services.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,11 +20,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@AllArgsConstructor
+//@AllArgsConstructor
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
     private final JWTFilter jwtFilter;
+
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, JWTFilter jwtFilter) {
+        this.customUserDetailsService = customUserDetailsService;
+        this.jwtFilter = jwtFilter;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
