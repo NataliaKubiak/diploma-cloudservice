@@ -1,31 +1,27 @@
 package org.example.diplomacloudservice.integrationTests.service;
 
-import org.example.diplomacloudservice.repositories.TokenRepository;
-import org.example.diplomacloudservice.services.JwtService;
+import org.example.diplomacloudservice.services.CustomUserDetailsService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class JwtServiceIntegrationTest {
+public class CustomUserDetailsServiceIntegrationTest {
 
     @Autowired
-    private JwtService jwtService;
-
-    @Autowired
-    private TokenRepository tokenRepository;
+    private CustomUserDetailsService userDetailsService;
 
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
             "postgres:16-alpine"
@@ -48,25 +44,15 @@ public class JwtServiceIntegrationTest {
         registry.add("spring.datasource.password", postgres::getPassword);
     }
 
-    @BeforeEach
-    void setUp() {
-        tokenRepository.deleteAll();
+    @Test
+    void testLoadUserByUsername() {
+        UserDetails userDetails = userDetailsService.loadUserByUsername("user1");
+
+        assertEquals("user1", userDetails.getUsername());
     }
 
     @Test
-    void testAddTokenToBlacklist() {
-        String token = jwtService.generateToken("user1");
-        jwtService.addTokenToBlacklist("user1", "Bearer " + token);
-
-        Optional<Object> maybeToken = tokenRepository.findFirstByToken(token);
-        assertTrue(maybeToken.isPresent());
-    }
-
-    @Test
-    void testIsTokenInBlacklist() {
-        String token = jwtService.generateToken("user1");
-        jwtService.addTokenToBlacklist("user1", "Bearer " + token);
-
-        assertTrue(jwtService.isTokenInBlacklist(token));
+    void testThrowUsernameNotFoundExceptionWhenUserNotFound() {
+        assertThrows(UsernameNotFoundException.class, () -> userDetailsService.loadUserByUsername("user123"));
     }
 }
