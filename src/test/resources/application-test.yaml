@@ -1,0 +1,14 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+file:
+  storage:
+    location: ${user.dir}/storage
+
+logging:
+  level:
+    root: INFO
+    org.springframework.jdbc.core: DEBUG
