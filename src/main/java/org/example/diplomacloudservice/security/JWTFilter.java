@@ -1,4 +1,4 @@
-package org.example.diplomacloudservice.config;
+package org.example.diplomacloudservice.security;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;

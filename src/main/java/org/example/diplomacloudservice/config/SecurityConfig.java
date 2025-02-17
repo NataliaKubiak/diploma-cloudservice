@@ -1,6 +1,7 @@
 package org.example.diplomacloudservice.config;
 
 import lombok.AllArgsConstructor;
+import org.example.diplomacloudservice.security.JWTFilter;
 import org.example.diplomacloudservice.services.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
