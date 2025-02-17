@@ -25,7 +25,7 @@ class FileValidatorTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenFilenameIsEmpty() {
+    void validateFilename_shouldThrowExceptionWhenFilenameIsEmpty() {
         String filename = "";
 
         InvalidFileException exception = assertThrows(InvalidFileException.class, () -> {
@@ -36,7 +36,7 @@ class FileValidatorTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenFilenameIsBlank() {
+    void validateFilename_shouldThrowExceptionWhenFilenameIsBlank() {
         String filename = "   ";
 
         InvalidFileException exception = assertThrows(InvalidFileException.class, () -> {
@@ -47,7 +47,7 @@ class FileValidatorTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenFilenameHasInvalidCharacters() {
+    void validateFilename_shouldThrowExceptionWhenFilenameHasInvalidCharacters() {
         String filename = "invalid@file.txt";
 
         InvalidFileException exception = assertThrows(InvalidFileException.class, () -> {
@@ -58,7 +58,7 @@ class FileValidatorTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenFilenameHasInvalidExtension() {
+    void validateFilename_shouldThrowExceptionWhenFilenameHasInvalidExtension() {
         String filename = "file.invalid_extension";
 
         InvalidFileException exception = assertThrows(InvalidFileException.class, () -> {
@@ -69,7 +69,7 @@ class FileValidatorTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenFileIsEmpty() {
+    void validateFile_shouldThrowExceptionWhenFileIsEmpty() {
         String filename = "validfile.txt";
         when(file.isEmpty()).thenReturn(true);
 
@@ -81,7 +81,7 @@ class FileValidatorTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenFileTypeIsBlocked() {
+    void validateFile_shouldThrowExceptionWhenFileTypeIsBlocked() {
         String filename = "blockedfile.exe";
         when(file.getOriginalFilename()).thenReturn(filename);
         when(file.isEmpty()).thenReturn(false);
@@ -94,7 +94,7 @@ class FileValidatorTest {
     }
 
     @Test
-    void shouldPassForValidFile() {
+    void validateFile_shouldPassForValidFile() {
         String filename = "validfile.txt";
         when(file.getOriginalFilename()).thenReturn(filename);
         when(file.isEmpty()).thenReturn(false);
@@ -103,7 +103,7 @@ class FileValidatorTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenFileHasNoExtension() {
+    void validateFile_shouldThrowExceptionWhenFileHasNoExtension() {
         String filename = "filewithoutextension";
         when(file.getOriginalFilename()).thenReturn(filename);
         when(file.isEmpty()).thenReturn(false);
@@ -116,14 +116,14 @@ class FileValidatorTest {
     }
 
     @Test
-    void shouldAllowValidFileExtension() {
+    void validateFilename_shouldAllowValidFileExtension() {
         String validFilename = "file123.txt";
 
         assertDoesNotThrow(() -> FileValidator.validateFilename(validFilename));
     }
 
     @Test
-    void shouldThrowExceptionForInvalidFileExtension() {
+    void validateFilename_shouldThrowExceptionForInvalidFileExtension() {
         String invalidFilename = "file123.exe";
 
         InvalidFileException exception = assertThrows(InvalidFileException.class, () -> {
