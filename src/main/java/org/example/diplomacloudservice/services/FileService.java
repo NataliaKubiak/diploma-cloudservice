@@ -71,7 +71,7 @@ public class FileService {
         log.debug("File path: {}", filePath.toString());
 
         multipartFile.transferTo(filePath.toFile());
-        log.debug("File saved to Storage");
+        log.info("File saved to Storage: {}", filePath.toString());
     }
 
     @Transactional

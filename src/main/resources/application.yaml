@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5433/postgres
+    url: jdbc:postgresql://postgres:5432/postgres
     username: postgres
     password: postgres
 
@@ -24,11 +24,5 @@ file:
 
 logging:
   level:
-    org.springframework.security: DEBUG
-    org.springframework.web: DEBUG
-
-#server:
-#  servlet:
-#    encoding:
-#      charset: UTF-8
-#      enabled: true
+    org.springframework.security: INFO
+    org.springframework.web: INFO

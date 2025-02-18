@@ -11,4 +11,4 @@ file:
 logging:
   level:
     root: INFO
-    org.springframework.jdbc.core: DEBUG
+    org.springframework.jdbc.core: INFO
