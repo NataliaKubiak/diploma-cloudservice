@@ -64,3 +64,26 @@
 - Файлы без расширений также не принимаются.
 
 Максимальный размер файла: **5 МБ**.
+
+## Как запустить
+
+1. **Склонировать проект**
+
+   ```bash
+   git clone https://github.com/NataliaKubiak/diploma-cloudservice.git
+   cd diploma-cloudservice
+
+2. **Собрать JAR файл через Maven**
+
+   ```bash
+   mvn clean install
+
+3. **Собрать Docker образ и запустить приложение**
+
+   ```bash
+   docker-compose up --build
+
+4. **Доступ к приложению**
+
+   ```bash
+   http://localhost:8080/login
