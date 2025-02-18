@@ -85,6 +85,8 @@ public class FileController {
         String username = getUsername();
         String newFilename = newFilenameRequest.get("name");
 
+        FileValidator.validateFilename(newFilename);
+
         if (!fileService.fileExistsForUser(oldFilename, username)) {
             log.warn("File '{}' does not exist for user '{}'", oldFilename, username);
             throw new InvalidFileException("File with name '" + oldFilename + "' does not exist for User: " + username);
