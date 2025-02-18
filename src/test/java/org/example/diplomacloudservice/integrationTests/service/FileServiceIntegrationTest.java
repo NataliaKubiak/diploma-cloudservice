@@ -211,6 +211,8 @@ public class FileServiceIntegrationTest {
 
         byte[] fileBytes = Files.readAllBytes(newFilePath);
         assertArrayEquals(fileContent, fileBytes);
+
+        Files.delete(newFilePath);
     }
 
     @Test
