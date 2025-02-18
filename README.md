@@ -76,7 +76,7 @@
 2. **Собрать JAR файл через Maven**
 
    ```bash
-   mvn clean install
+   mvn clean package
 
 3. **Собрать Docker образ и запустить приложение**
 
